@@ -10,120 +10,109 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: Scaffold(
-        appBar: AppBar(
-          title: const Text('Carrossel de Formulários'),
-          backgroundColor: Colors.blue,
-        ),
-        body: const FormCarousel(),
+      title: 'BottomNav + TabBar',
+      theme: ThemeData(primarySwatch: Colors.blue),
+      home: const MainPage(),
+    );
+  }
+}
+
+class MainPage extends StatefulWidget {
+  const MainPage({super.key});
+
+  @override
+  State<MainPage> createState() => _MainPageState();
+}
+
+class _MainPageState extends State<MainPage> {
+  int _selectedIndex = 0;
+
+  final List<Widget> _pages = [
+    const HomePage(),
+    const ModuleTwoPage(),
+    const SettingsPage(),
+  ];
+
+  void _onItemTapped(int index) {
+    setState(() {
+      _selectedIndex = index;
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      body: _pages[_selectedIndex],
+      bottomNavigationBar: BottomNavigationBar(
+        currentIndex: _selectedIndex,
+        onTap: _onItemTapped,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.home),
+            label: 'Home',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.layers),
+            label: 'Módulo 2',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.settings),
+            label: 'Configurações',
+          ),
+        ],
       ),
     );
   }
 }
 
-class FormCarousel extends StatefulWidget {
-  const FormCarousel({super.key});
-
-  @override
-  State<FormCarousel> createState() => _FormCarouselState();
-}
-
-class _FormCarouselState extends State<FormCarousel> {
-  final List<Map<String, dynamic>> formsData = List.generate(5, (_) {
-    return {'nome': '', 'dataNascimento': null, 'sexo': null};
-  });
+class HomePage extends StatelessWidget {
+  const HomePage({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 20),
-      child: ListView.builder(
-        scrollDirection: Axis.horizontal,
-        itemCount: formsData.length,
-        itemBuilder: (context, index) {
-          return SizedBox(
-            width: 300,
-            child: Card(
-              margin: const EdgeInsets.symmetric(horizontal: 10),
-              elevation: 4,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(15),
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(15),
-                child: Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    // Nome completo
-                    TextField(
-                      decoration: const InputDecoration(
-                        labelText: 'Nome Completo',
-                      ),
-                      onChanged: (value) {
-                        setState(() {
-                          formsData[index]['nome'] = value;
-                        });
-                      },
-                    ),
-                    const SizedBox(height: 10),
+    return const Center(
+      child: Text('Página Inicial', style: TextStyle(fontSize: 24)),
+    );
+  }
+}
 
-                    // Data de nascimento
-                    GestureDetector(
-                      onTap: () async {
-                        DateTime? picked = await showDatePicker(
-                          context: context,
-                          initialDate: DateTime(2000),
-                          firstDate: DateTime(1900),
-                          lastDate: DateTime.now(),
-                        );
-                        if (picked != null) {
-                          setState(() {
-                            formsData[index]['dataNascimento'] = picked;
-                          });
-                        }
-                      },
-                      child: InputDecorator(
-                        decoration: const InputDecoration(
-                          labelText: 'Data de Nascimento',
-                          border: OutlineInputBorder(),
-                        ),
-                        child: Text(
-                          formsData[index]['dataNascimento'] != null
-                              ? '${formsData[index]['dataNascimento'].day}/${formsData[index]['dataNascimento'].month}/${formsData[index]['dataNascimento'].year}'
-                              : 'Selecione uma data',
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 10),
+class ModuleTwoPage extends StatelessWidget {
+  const ModuleTwoPage({super.key});
 
-                    // Sexo
-                    DropdownButtonFormField<String>(
-                      decoration: const InputDecoration(
-                        labelText: 'Sexo',
-                        border: OutlineInputBorder(),
-                      ),
-                      value: formsData[index]['sexo'],
-                      items: const [
-                        DropdownMenuItem(value: 'Homem', child: Text('Homem')),
-                        DropdownMenuItem(
-                          value: 'Mulher',
-                          child: Text('Mulher'),
-                        ),
-                      ],
-                      onChanged: (value) {
-                        setState(() {
-                          formsData[index]['sexo'] = value;
-                        });
-                      },
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          );
-        },
+  @override
+  Widget build(BuildContext context) {
+    return DefaultTabController(
+      length: 3, // número de abas
+      child: Scaffold(
+        appBar: AppBar(
+          title: const Text("Módulo 2"),
+          bottom: const TabBar(
+            tabs: [
+              Tab(text: "Aba 1", icon: Icon(Icons.looks_one)),
+              Tab(text: "Aba 2", icon: Icon(Icons.looks_two)),
+              Tab(text: "Aba 3", icon: Icon(Icons.looks_3)),
+            ],
+          ),
+        ),
+        body: const TabBarView(
+          children: [
+            Center(child: Text("Conteúdo da Aba 1")),
+            Center(child: Text("Conteúdo da Aba 2")),
+            Center(child: Text("Conteúdo da Aba 3")),
+          ],
+        ),
       ),
+    );
+  }
+}
+
+class SettingsPage extends StatelessWidget {
+  const SettingsPage({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const Center(
+      child: Text('Configurações', style: TextStyle(fontSize: 24)),
     );
   }
 }
